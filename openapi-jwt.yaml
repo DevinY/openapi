@@ -1,0 +1,257 @@
+openapi: 3.0.1
+info:
+  title: JWT 範例API
+  description: 一個使用JWT為範例的檔案。
+  version: '0.1'
+  contact:
+    name: 範例程式
+    url: 'https://www.ccc.tc/'
+servers:
+  - url: 'https://www.ccc.tc'
+    description: 外網測試機
+  - url: 'https://test1.test'
+    description: 內網測試機一
+  - url: 'http://test2.test'
+    description: 內網測試機二
+tags:
+  - name: JWT測試
+    description: 提供JWT測試用接口。
+  - name: 分類一
+    description: 透過Tag進行分類。
+  - name: 分類二
+    description: 分類的名稱與下方的tags名稱對印。
+
+paths:
+  /api/jwt_test:
+    get:
+      tags:
+        - JWT測試
+      summary: 取得測試用的access token，可設定時間，實際的token請由自己的主機產生。
+      description: 此為API測試用的Token，請在自己的主機產生Token，</br>主機應使用HTTPS進行傳送。
+      parameters:
+        - in: query
+          name: get_token
+          schema:
+            type: string
+            enum:
+              - 28800
+              - 14400
+              - 60
+            description: 過期秒數
+          required: true
+      responses:
+        '200':
+          description: 回傳執行結果的JSON資訊。
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  state:
+                    type: string
+                    description: y為執行成功，n為執行失敗。
+                  token:
+                    type: string
+                    description: 測試用的Token。
+                  expired:
+                    type: string
+                    description: Token過期時間。
+    post:
+      security:
+        - bearerAuth: []
+      summary: JWT測試用的API，可用於驗證程式是否可正常與主機溝通。
+      tags:
+        - JWT測試
+      description: 用來驗證產生的JWT Token是否有效，<br/>並且確認欄位有正常傳送至主機。
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                sog:
+                  type: integer
+                  default: 1234
+                age:
+                  type: integer
+              required:
+                - sog
+      responses:
+        '200':
+          description: 回傳執行結果的JSON資訊。
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  state:
+                    type: string
+                    description: y為執行成功，n為執行失敗。
+                  data:
+                    type: string
+                    description: 回傳傳送到主機的表單資料。
+                  msg:
+                    type: string
+                    description: 說明更新的狀態，如果n時，代表更新失敗。
+  /api/article:
+    post:
+      security:
+        - bearerAuth: []
+      tags:
+        - 分類一
+      summary: 文章新增或修改
+      description: 透過此API進行文章的新增或更新。
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: integer
+                  description: 文章編號
+                block:
+                  type: integer
+                  description: 使用enum就會有下拉選項在ui
+                  enum:
+                    - 0
+                    - 1
+                    - 2
+                    - 3
+                data:
+                  type: object
+                  properties:
+                    title:
+                      type: string
+                      example: 文章內容
+                    content:
+                      type: string
+                      example: 假的假的資料
+                    created_at:
+                      type: string
+                      example: '2018-12-10 12:59:03'
+              required:
+                - student_id
+                - ns_status
+      responses:
+        '200':
+          description: 回傳執行結果的JSON資訊。
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  state:
+                    type: string
+                    description: y為執行成功，n為執行失敗。
+                  new_status:
+                    type: string
+                    description: 回傳新的狀態名稱。
+                  msg:
+                    type: string
+                    description: 回應結果。
+  /api/user_add:
+    post:
+      security:
+        - bearerAuth: []
+      tags:
+        - 分類二
+      summary: 這只是參考用的sample
+      description: 這個API的描述。
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: integer
+                  description: 使用者編號
+                sog:
+                  type: integer
+                  description: 手機號
+                scope:
+                  type: string
+                  description: '有:時，可用單引號框起來'
+                avatar:
+                  type: integer
+                  description: 未指定時，自動代入0001
+                  default: '0001'
+
+              required:
+                - id
+                - sog
+                - avatar
+      responses:
+        '200':
+          description: 回傳執行結果的JSON資訊。
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  state:
+                    type: string
+                    description: y為執行成功，n為執行失敗。
+                  student_ns_id:
+                    type: integer
+                    description: 回傳新增成功後，student_nses資料表之pk。
+                  msg:
+                    type: string
+                    description: 回應結果。
+  /api/user_update:
+    post:
+      security:
+        - bearerAuth: []
+      tags:
+        - 分類二
+      summary: 有security時，就會需要驗證。
+      description: 此範例使用JWT的bearer方式。
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                student_id:
+                  type: integer
+                  description: id
+                data:
+                  type: object
+                  properties:
+                    name:
+                      type: integer
+                      example: 小明
+                    age:
+                      type: integer
+                      example: 6
+                    area:
+                      type: integer
+                      example: '1'
+              required:
+                - id
+                - data
+      responses:
+        '200':
+          description: 回傳執行結果的JSON資訊。
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  state:
+                    type: string
+                    description: y為執行成功，n為執行失敗。
+                  msg:
+                    type: string
+                    description: 回應結果。
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+externalDocs:
+  url: 'https://swagger.io/docs/specification/authentication/bearer-authentication/'
+  description: 關於bearer驗證
