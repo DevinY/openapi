@@ -1,14 +1,20 @@
 openapi: 3.0.1
 info:
   title: JWT 範例API
-  description: 一個使用JWT為範例的檔案。
+  description: "一個使用JWT為範例的檔案。<br/>在D-Laravel的Docker環境中，您應該補上<br/>
+  <code>extra_hosts:
+    <br/>
+    &nbsp;&nbsp;- \"test1.test: 127.0.0.1\"<br/>
+    &nbsp;&nbsp;- \"test2.test: 127.0.0.1\"</code>
+    <br/>
+  在web的服務下，才可進行測試哦。
+  "
+ 
   version: '0.1'
   contact:
-    name: 範例程式
+    name: ccc.tc
     url: 'https://www.ccc.tc/'
 servers:
-  - url: 'https://www.ccc.tc'
-    description: 外網測試機
   - url: 'https://test1.test'
     description: 內網測試機一
   - url: 'http://test2.test'
@@ -20,7 +26,6 @@ tags:
     description: 透過Tag進行分類。
   - name: 分類二
     description: 分類的名稱與下方的tags名稱對印。
-
 paths:
   /api/jwt_test:
     get:
@@ -177,7 +182,6 @@ paths:
                   type: integer
                   description: 未指定時，自動代入0001
                   default: '0001'
-
               required:
                 - id
                 - sog
@@ -245,7 +249,6 @@ paths:
                   msg:
                     type: string
                     description: 回應結果。
-
 components:
   securitySchemes:
     bearerAuth:
